@@ -1,0 +1,22 @@
+# Modified from https://github.com/hendrycks/apps/blob/main/requirements.txt
+
+# Used for evaluation and some common for train too
+numpy
+pyext
+sacrebleu
+sacremoses
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.12.1+cu116
+transformers
+psutil
+scipy
+gym
+
+# Only needed for training
+# deepspeed
+# accelerate
+# tensorboardX
+
+# for plotting trees and experiment figures
+networkx
+matplotlib
