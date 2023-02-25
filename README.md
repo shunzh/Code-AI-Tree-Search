@@ -29,7 +29,7 @@ Extract it in this directory. It should appear as `CodeContests/`.
 
 ### Download Using Command Line
 
-If you prefer download the data and models using command line, you may run the following commands.
+If you prefer to download the data and models using the command line, you may run the following commands.
 ```
 # Download APPS dataset
 wget https://people.eecs.berkeley.edu/~hendrycks/APPS.tar.gz
@@ -55,7 +55,7 @@ cd generate
 python synthesis_exp.py -i 4136 --alg bs
 ```
 The following runs **PG-TD** using default parameters as in Table 1, performing 16 rollouts in tree search.
-We add a prefix `t-` to the output file name to distinguish it from the beam search result. The result is saved as `results/t-4136.json`.
+We add the prefix `t-` to the output file name to distinguish it from the beam search result. The result is saved as `results/t-4136.json`.
 ```
 python synthesis_exp.py -i 4136 --alg mcts --rollout 16 --prefix t-
 ```
@@ -82,9 +82,9 @@ You may add the `--debug` argument to generate more verbose output. For PG-TD, i
 ```
 python synthesis_exp.py -i 4136 --alg mcts --rollout 16 --prefix t- --debug
 ```
-By default, the script skips generation if the output file already exists. You may use `--run` to force re-generation.
+By default, the script skips generation if the output file already exists. You may use `--rerun` to force regeneration.
 
-Once the `json` files are generated, you may also use `test_solution.py` to review the results without re-generating the solutions.
+Once the `json` files are generated, you may also use `test_solution.py` to review the results without regenerating the solutions.
 The following command assumes `results/[4000-4009].json` are already generated.
 ```
 python test_solution.py -s 4000 -e 4010
@@ -94,7 +94,7 @@ python test_solution.py -s 4000 -e 4010
 ## Run All Experiments
 
 We conducted the experiments on the IBM CCC and AiMOS servers, which use LSF and Slurm job submission systems respectively. If you use one of these submission systems, you should be able to run the following scripts directly.
-Otherwise, you may look at `generate/scripts/basis.sh` and see if you need to define a new `submit` command to submit jobs to the computation clusters that you are using.
+Otherwise, you may look at `generate/scripts/basis.sh` and see if you need to define a new `submit` command to submit jobs to the computation clusters that you use.
 
 ### Main Results (Table 1)
 
@@ -103,7 +103,7 @@ The following shell scripts reproduce results in the main paper.
 ```
 cd generate
 
-# beam search
+# Seam Search
 ./scripts/beam/run.sh
 
 # Sampling + Filtering
@@ -115,11 +115,11 @@ cd generate
 # Planning-Guided Transformer Decoding (PG-TD)
 ./scripts/mcts/run.sh
 ```
-Note that each script runs the corresponding algorithm on both APPS (5000 problems) and CodeContests (165 problems) datasets, using both GPT-2 and GPT-Neo models. You may change the range of problems to run by changing the `$start` and `$end` variables and/or comment out models that you do not want to evaluate in these files.
+Note that each script runs the corresponding algorithm on both APPS (5000 problems) and CodeContests (165 problems) datasets, using both GPT-2 and GPT-Neo models. You may change the range of problems to run by changing the `$start` and `$end` variables and/or comment out models that you do not want to use in these files.
 
 ### Other Results
 
-These experiments require passing in some additional arguments to `synthesis_exp.py`. The following shell scripts reproduce results in the appendix.
+These experiments require passing in some additional arguments to `synthesis_exp.py`. The following shell scripts reproduce some other results in the paper.
 
 PG-TD using different hyper-parameters:
 ```
