@@ -12,7 +12,7 @@ Install the environment by running the following command. We use an Anaconda env
 ```
 pip install -r requirements.txt
 ```
-We specified the torch+CUDA version that we used. Other versions may work as well. Our codebase also works without GPU, but the Transformer decoding will be significantly slower.
+We specified the torch+CUDA version that we used. Other versions may work as well.
 
 ## Data and Model Preparation
 
@@ -49,7 +49,7 @@ tar xvzf CodeContests_test.tar.gz
 
 After downloading the APPS dataset and the GPT models above, you may use `APPS/test/4136` for sanity check. It's a simple A+B question (see `APPS/test/4136/question.txt`).
 
-The following runs **beam search**. the result is saved as `results/4136.json`.
+The following runs **beam search**. The result is saved as `results/4136.json`.
 ```
 cd generate
 python synthesis_exp.py -i 4136 --alg bs
@@ -74,7 +74,7 @@ The scripts above will print the pass rates (rewards) and other statistics at th
 
 ### Tips
 You may run the algorithms above to solve a batch of programs. The following runs beam search on the first 10 APPS introductory-level problems, with the problem ID from 4000 to 4009.
-the results are saved as `results/[4000-4009].json`.
+The results are saved as `results/[4000-4009].json`.
 ```
 python synthesis_exp.py -s 4000 -e 4010 --alg bs
 ```
@@ -103,7 +103,7 @@ The following shell scripts reproduce results in the main paper.
 ```
 cd generate
 
-# Seam Search
+# Beam Search
 ./scripts/beam/run.sh
 
 # Sampling + Filtering
