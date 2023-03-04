@@ -1,4 +1,4 @@
-# Measuring Coding Challenge Competence With APPS
+# Planning with Large Language Models for Code Generation
 This is the repository for **Planning with Large Language Models for Code Generation** (accepted at ICLR 2023). This codebase is modified from Dan Hendrycks's [APPS](https://github.com/hendrycks/apps) repository.
 The tree search algorithm is modified from the [Dyna Gym](https://github.com/SuReLI/dyna-gym) repository.
 
