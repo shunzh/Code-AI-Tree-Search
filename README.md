@@ -133,3 +133,7 @@ Running PG-TD using Codex model. You'll need an OpenAI API key for this. Save th
 ```
 ./scripts/mcts/run_codex.sh
 ```
+
+## Contact Us
+
+For any questions or issues, you are welcome to open an issue in this repo, or contact us at shun.zhang@ibm.com.
