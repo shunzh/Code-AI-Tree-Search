@@ -90,7 +90,6 @@ def main():
 
     for i, prob_instance in zip(problem_indices, problems):
         code_loc = os.path.join(args.save, f"{args.prefix}{i}.json")
-        info_loc = os.path.join(args.save, f"{args.prefix}info-{i}.json")
         log_loc = os.path.join(args.save, f"{args.prefix}{i}.log")
 
         if not args.rerun:

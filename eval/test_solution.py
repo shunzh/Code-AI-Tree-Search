@@ -238,7 +238,7 @@ def main(arg_dict=None):
 
     # the following implements the n@k metric
     # k is the number of samples. By default, k is None, where we use all the samples we have
-    # n is the number of submissions. By default, n = 1, where it returns the rpgoram with the highest reward
+    # n is the number of submissions. By default, n = 1, where it evalutes the problem with the highest training reward
     # k-list example: 128,256,512,null
     parser.add_argument("--k-list", type=str, default='null', help='Find the best program in the first k generated programs.')
     parser.add_argument("-n", default=1, type=int, help='Evaluate using the n best program candidates (the n programs that have the highest pass rate on the training set.')

@@ -1,7 +1,5 @@
 """
 The original code generation script from APPS. We no longer use this script for our experiments.
-
-Run a tranined model to generate Python code.
 """
 
 import io

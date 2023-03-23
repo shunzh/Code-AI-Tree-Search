@@ -1,4 +1,4 @@
-./scrpts/basis.sh
+./scripts/basis.sh
 cc="--test-loc ../CodeContest_data_split/test.json" # specify the location of CodeContests test set
 neo="-l ../models/2.7B"
 

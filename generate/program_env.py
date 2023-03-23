@@ -5,9 +5,9 @@ from abc import abstractmethod, ABC
 from collections import OrderedDict
 from types import SimpleNamespace
 
-from compute_reward import compute_reward
+from eval.compute_reward import compute_reward
 from transformer_utils.utils import is_codex_model
-from eval.generate_gpt_codes import generate_apps_prompt, get_output_str_from_state_for_apps
+from eval.generate_gpt_codes import get_output_str_from_state_for_apps
 
 
 class ProgramEnv(ABC):
@@ -104,8 +104,10 @@ class APPSProgramEnv(ProgramEnv):
 
         if is_codex_model(self.model):
             from transformer_utils.codex import generate_apps_prompt_for_codex
+            # add `Python 3` to the prompt
             state, _ = generate_apps_prompt_for_codex(prompt_path)
         else:
+            from eval.generate_gpt_codes import generate_apps_prompt
             # generate prompt to encode question text and an "ANSWER" prompt to the state
             # no need to load the full arglist here, it only needs to check the value of peeking (using default value 0.0 here)
             gpt_args = SimpleNamespace(peeking=0.0)
@@ -181,33 +183,9 @@ class HumanEvalProgramEnv(ProgramEnv):
 
         # define initial prompt
         state = self.problem['prompt']
-        func_name = self.problem['entry_point']
 
         if self.task == 'gen_test':
-            lines = state.split('\n')
-
-            # remove example inputs, outputs
-            comment_symbol_counter = 0
-            clip_start_line = None
-            clip_end_line = None
-            for line_num, line in enumerate(lines):
-                if '   """' in line:
-                    comment_symbol_counter += 1
-                    if comment_symbol_counter == 2:
-                        clip_end_line = line_num
-                elif '    >>>' in line and clip_start_line is None:
-                    clip_start_line = line_num
-
-            clipped_lines = lines[:clip_start_line] + lines[clip_end_line:]
-            state = '\n'.join(clipped_lines)
-
-            # modify the prompt for test case generation according to
-            # CodeT: Code Generation with Generated Tests  https://arxiv.org/abs/2207.10397
-            state += f"""   pass
-
-# check the correctness of {func_name}
-def check(candidate):
-    assert candidate"""
+            state = generate_human_eval_test_prompt(state, self.problem['entry_point'])
 
         self.init_prompt = copy.copy(state)
         self.state = self.tokenizer.encode(state)
@@ -235,6 +213,9 @@ def check(candidate):
             reference = self.generated_test_cases
         else:
             reference = self.test # use ground truth
+
+        # need to call the check function
+        reference = f"{reference}\ncheck({self.problem['entry_point']})"
 
         pass_at_k, results = self.metric.compute(references=[reference], predictions=[[program]], k=[1])
         print(pass_at_k)
@@ -269,3 +250,32 @@ def check(candidate):
                 return s
         else:
             raise Exception("unsupported model")
+
+
+def generate_human_eval_test_prompt(state, func_name):
+    lines = state.split('\n')
+
+    # remove example inputs, outputs
+    comment_symbol_counter = 0
+    clip_start_line = None
+    clip_end_line = None
+    for line_num, line in enumerate(lines):
+        if '   """' in line:
+            comment_symbol_counter += 1
+            if comment_symbol_counter == 2:
+                clip_end_line = line_num
+        elif '    >>>' in line and clip_start_line is None:
+            clip_start_line = line_num
+
+    clipped_lines = lines[:clip_start_line] + lines[clip_end_line:]
+    state = '\n'.join(clipped_lines)
+
+    # modify the prompt for test case generation according to
+    # CodeT: Code Generation with Generated Tests  https://arxiv.org/abs/2207.10397
+    state += f"""   pass
+
+    # check the correctness of {func_name}
+    def check(candidate):
+        assert candidate"""
+
+    return state
