@@ -166,3 +166,5 @@ openai_api_key
 codex_cache.json
 *.xlsx
 humaneval_tests*
+
+push.sh

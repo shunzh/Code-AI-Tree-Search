@@ -71,18 +71,6 @@ def process_results(results, save=None, filter_indices=None):
 
     return stat
 
-def fill_up_missed_rewards(i, backup_results):
-    """
-    Returns:
-        backed-up reward and reward_train
-    """
-    if str(i) in backup_results['rewards'].keys():
-        print("Adding backup to results")
-        return backup_results['rewards'][str(i)], backup_results['rewards_train'][str(i)],\
-               backup_results['times'][str(i)]
-    else:
-        print(f"{i} missing in backup file")
-        return 0, 0, 0
 
 def eval_and_save_problems(args, indices, k, result_prefix):
     """
@@ -105,19 +93,6 @@ def eval_and_save_problems(args, indices, k, result_prefix):
     # don't show progress bar if only one problem to test
     indices = tqdm(indices) if len(indices) > 1 else indices
 
-    # used for aggregating results
-    backup_counter = 0
-
-    if args.backup:
-        backup = args.backup.replace('$k', f'k{k}-' if k is not None else '')
-        try:
-            with open(backup, 'r') as f:
-                backup_results = json.load(f)
-        except:
-            raise Exception(f"args.backup {backup} specified, but failed to open.")
-    else:
-        backup_results = None
-
     for index in indices:
         if str(index) in rewards.keys() and not args.retest:
             print(f"skipping {index} because it's already in results json file")
@@ -126,16 +101,7 @@ def eval_and_save_problems(args, indices, k, result_prefix):
         code_loc = os.path.join(args.save, f"{args.prefix}{index}.json")
 
         if not os.path.exists(code_loc):
-            # in print_results mode, if result doesn't exist, fill it up using backup_results
             print(f"didn't find result for {index}")
-
-            if backup_results:
-                # if backup results exist, fill up the missing results
-                print("using backup")
-                reward, reward_train, time = fill_up_missed_rewards(index, backup_results)
-                rewards[index], rewards_train[index], times[index] = reward, reward_train, time
-                backup_counter += 1
-
             continue
         else:
             # result_loc exists, simply read it
@@ -213,8 +179,6 @@ def eval_and_save_problems(args, indices, k, result_prefix):
         except Exception as e:
             print(f"Couldn't save all results.\n{e}")
 
-    print(f"Used {backup_counter} back-up results.")
-
     # return results from args.start to args.end
     filter_op = lambda x: {k: x[k] for k in x.keys() if int(k) in indices}
     ret_results = {k: filter_op(v) for k, v in all_results.items()}
@@ -238,13 +202,12 @@ def main(arg_dict=None):
 
     # the following implements the n@k metric
     # k is the number of samples. By default, k is None, where we use all the samples we have
-    # n is the number of submissions. By default, n = 1, where it evalutes the problem with the highest training reward
+    # n is the number of submissions. By default, n = 1, where it evaluates the problem with the highest training reward
     # k-list example: 128,256,512,null
     parser.add_argument("--k-list", type=str, default='null', help='Find the best program in the first k generated programs.')
     parser.add_argument("-n", default=1, type=int, help='Evaluate using the n best program candidates (the n programs that have the highest pass rate on the training set.')
 
     parser.add_argument('--retest', action='store_true', default=False, help="rerun tests.")
-    parser.add_argument('--backup', default=None, type=str, help='Use rewards in this file if code_loc not found.')
 
     parser.add_argument("--public-cases", type=str, default='half')
 

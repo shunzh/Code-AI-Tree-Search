@@ -12,9 +12,9 @@ from tqdm import tqdm
 sys.path.append('../')
 sys.path.append('../eval/')
 
-from default_pi import APPSHeuristic, CodexHeuristic
+from default_pi import APPSHeuristic
 
-from transformer_utils.utils import is_codex_model, get_model_by_name
+from transformer_utils.utils import get_model_by_name
 
 # okay with parallelization
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -78,13 +78,6 @@ def main():
             problems = json.load(f)
         # get a list of program file paths
         problems = [problems[idx] for idx in problem_indices]
-    elif args.dataset == 'humaneval':
-        from datasets import load_dataset
-        from evaluate import load as load_metric
-        data = load_dataset("openai_humaneval")
-        metric = load_metric("code_eval")
-        # get a list of program dict object
-        problems = [data['test'][idx] for idx in problem_indices]
     else:
         raise Exception(f"Unknown dataset {args.dataset}")
 
@@ -112,49 +105,27 @@ def main():
                 horizon=args.horizon,
                 public_test_cases=args.public_cases
             )
-        elif args.dataset == 'humaneval':
-            from program_env import HumanEvalProgramEnv
-            env = HumanEvalProgramEnv(
-                problem=prob_instance,
-                model_name=args.load,
-                tokenizer=tokenizer,
-                horizon=args.horizon,
-                generated_test_cases=f'humaneval_tests_no_example/{i}.json',
-                metric=metric,
-                task=args.task,
-                peek=args.peek,
-                overfit=args.overfit,
-            )
+        else:
+            raise Exception(f"Unknown dataset {args.dataset}")
 
         # set up models
-        if is_codex_model(args.load):
-            # todo enable sample
-            dp = CodexHeuristic(
-                k=args.width,
-                horizon=args.horizon,
-                env=env,
-                model=model,
-                use_seq_cache=not args.no_seq_cache,
-                debug=args.debug
-            )
-        else:
-            dp = APPSHeuristic(
-                tokenizer=tokenizer,
-                model=model,
-                value_model=value_model,
-                k=args.width,
-                num_beams=args.num_beams,
-                test_all_beams=args.test_all_beams,
-                horizon=args.horizon,
-                new_token_num=args.new_token_num,
-                device=args.device,
-                use_seq_cache=not args.no_seq_cache,
-                use_prompt_cache=not args.no_prompt_cache,
-                top_k_cache_steps=args.top_k_cache_steps,
-                ts_mode=args.ts_mode,
-                env=env,
-                debug=args.debug
-            )
+        dp = APPSHeuristic(
+            tokenizer=tokenizer,
+            model=model,
+            value_model=value_model,
+            k=args.width,
+            num_beams=args.num_beams,
+            test_all_beams=args.test_all_beams,
+            horizon=args.horizon,
+            new_token_num=args.new_token_num,
+            device=args.device,
+            use_seq_cache=not args.no_seq_cache,
+            use_prompt_cache=not args.no_prompt_cache,
+            top_k_cache_steps=args.top_k_cache_steps,
+            ts_mode=args.ts_mode,
+            env=env,
+            debug=args.debug
+        )
 
         start = time.time()
 
@@ -252,7 +223,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--peek", action="store_true")
 
-    parser.add_argument("--dataset", default="apps", type=str, choices=["apps", "humaneval"])
+    parser.add_argument("--dataset", default="apps", type=str, choices=["apps"])
     parser.add_argument("-i", "--index", default=None, type=int)
     parser.add_argument("-s","--start", default=0, type=int)
     parser.add_argument("-e","--end", default=None, type=int)
