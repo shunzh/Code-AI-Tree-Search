@@ -2,6 +2,9 @@
 This is the repository for **Planning with Large Language Models for Code Generation** (accepted at ICLR 2023). This codebase is modified from Dan Hendrycks's [APPS](https://github.com/hendrycks/apps) repository.
 The tree search algorithm is modified from the [Dyna Gym](https://github.com/SuReLI/dyna-gym) repository.
 
+**Note:** The goal of this repository is to use LLMs for code generation and reproduce the results in our paper.
+If you are interested in applying Monte-Carlo tree search on LLMs in general, you may also check out our [mcts-for-llm](https://github.com/shunzh/mcts-for-llm/) repository.
+
 ## Framework
 
 ![Tree search framwork](figures/code_ai_tree_search.png)
