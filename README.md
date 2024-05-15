@@ -139,4 +139,4 @@ Variations of PG-TD (using sampling instead of beam search, using different numb
 
 ## Contact Us
 
-For any questions or issues, you are welcome to open an issue in this repo, or contact us at shun.zhang@ibm.com.
+For any questions or issues, please feel free to open an issue or create a discussion post in this repository, or contact us at shunzh@umich.edu.
