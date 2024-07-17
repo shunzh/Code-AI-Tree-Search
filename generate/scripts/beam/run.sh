@@ -2,7 +2,7 @@
 cc="--test-loc ../CodeContest_data_split/test.json" # specify the location of CodeContests test set
 neo="-l ../models/2.7B"
 
-extra='--alg bs'
+extra='--alg bs --num-beams 5'
 
 # beam search is much faster than the other algorithms, so we can call synthesis_exp.py once to run all problems in a dataset
 
